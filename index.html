@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <title>SIMPA - Predios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Roboto", sans-serif;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .app-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #1b5b2f;
+      color: #fff;
+      padding: 4px;
+      text-align: center;
+      font-weight: bold;
+      z-index: 1000;
+    }
+
+    .menu-bar {
+      position: absolute;
+      top: 26px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      gap: 2px;
+      background: #1b5b2f;
+      padding: 5px 5;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    /*justify-content:space-around;*/
+    .menu-bar button {
+      background: #536355;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .menu-bar button:hover {
+      background: #747f75;
+    }
+
+    .basemap-panel {
+      position: absolute;
+      top: 120px;
+      right: 10px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      font-size: 14px;
+      z-index: 1000;
+    }
+
+    .predios-panel {
+      position: absolute;
+      top: 120px;
+      left: 10px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      font-size: 14px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .atributos-panel {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-height: 35%;
+      min-height: 120px;
+      background: #fff;
+      overflow: auto;
+      display: none;
+      border-top: 2px solid #ccc;
+      z-index: 1000;
+      padding: 5px;
+      font-size: 13px;
+    }
+
+    .atributos-panel table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .atributos-panel th,
+    .atributos-panel td {
+      border: 1px solid #ccc;
+      padding: 4px;
+    }
+
+    .atributos-panel th {
+      background: #f0f0f0;
+    }
+
+    .atributos-panel input {
+      width: 95%;
+      padding: 3px;
+      margin-bottom: 3px;
+      font-size: 12px;
+    }
+
+    #close-predios {
+      color: #333;
+      font-weight: bold;
+    }
+
+    #close-predios:hover {
+      color: #ff0000;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-header">Monitoreo de Parcelas Agrícolas - SIMPA</div>
+
+  <div class="menu-bar">
+    <button onclick="alert('Clima en desarrollo')">Clima</button>
+    <button id="btn-predios">Predios</button>
+    <button onclick="alert('Monitoreo en desarrollo')">Monitoreo</button>
+  </div>
+
+  <div class="basemap-panel">
+    <strong>Mapa Base</strong><br>
+    <input type="radio" name="basemap" value="calles" checked> Calles<br>
+    <input type="radio" name="basemap" value="satelite"> Satelital<br>
+    <input type="radio" name="basemap" value="hibrido"> Hibrido<br>
+  </div>
+
+  <div class="predios-panel" id="panel-predios">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <strong>Predios</strong>
+      <button id="close-predios" style="background:none; border:none; font-size:16px; cursor:pointer;">✖</button>
+    </div>
+    <label><input type="checkbox" id="chk-visualizar"> 👁️ Ver</label><br>
+    <label><input type="checkbox" id="chk-buscar"> 🔍 Consultar</label>
+  </div>
+
+  <div class="atributos-panel" id="panel-atributos">
+    <div id="filterContainer"></div>
+    <div id="sumContainer" style="margin-top:10px;">
+      <table id="sumTable" border="1" style="border-collapse:collapse; width:100%; text-align:center;">
+        <thead>
+          <tr id="sumHeader"></tr>
+        </thead>
+        <tbody>
+          <tr id="sumRow"></tr>
+        </tbody>
+      </table>
+    </div>
+    <table id="tabla-atributos">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="map"></div>
+  <script>
+    //#region   CONFIGURA MAPA
+    const limite = [
+      [-70.50, -23.80], // suroeste (long, lat)
+      [-53.00, -9.50]  // noreste (long, lat)
+    ];
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: {
+        version: 8,
+        sources: {
+          s_satelite: {
+            type: 'raster', tiles: ['https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+            tileSize: 256
+          },
+          s_osm: { type: 'raster', tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'] },
+          //s_predios: { type: 'vector', tiles: ['http://192.168.0.13:7800/public.predios/{z}/{x}/{y}.pbf'] } //esto yano es para mas de 5000 geometrias
+          s_predios: { type: 'geojson', data: 'http://192.168.0.13:9000/collections/public.predios/items?' }
+        },
+        layers: [
+          { id: 'l_satelite', type: 'raster', source: 's_satelite', layout: { visibility: 'none' }, paint: { 'raster-opacity': 1 } },
+          { id: 'l_calles', type: 'raster', source: 's_osm', layout: { visibility: 'visible' }, paint: { 'raster-opacity': 1 } },
+          {
+            id: 'l_predios-fill', type: 'fill', source: 's_predios', paint: { 'fill-color': '#088', 'fill-opacity': 0.2 },
+            layout: { visibility: 'none' }
+          },
+          {
+            id: 'l_predios-outline', type: 'line', source: 's_predios', paint: { 'line-color': '#000', 'line-width': 1 },
+            layout: { visibility: 'none' }
+          }
+        ]
+      },
+      center: [-62.0, -16.7],
+      //zoom: 6.3,
+      minZoom: 6.3, //limitando solo a SC
+      //maxZoom: 16.4, //pa q no sesaparezca cuando ya llega al limite
+      maxZoom: 18.4, //pa q no sesaparezca cuando ya llega al limite
+      maxBounds: limite
+      //zoom:0
+    });
+    //#endregion
+
+    //#region   MAPA BASE
+    document.querySelectorAll('input[name="basemap"]').forEach(radio => {
+      radio.addEventListener('change', e => {
+        if (e.target.value === 'calles') {
+          map.setPaintProperty('l_calles', 'raster-opacity', 1);
+          map.setLayoutProperty('l_satelite', 'visibility', 'none');
+          map.setLayoutProperty('l_calles', 'visibility', 'visible');
+        } else if (e.target.value === 'satelite') {
+          map.setLayoutProperty('l_satelite', 'visibility', 'visible');
+          map.setLayoutProperty('l_calles', 'visibility', 'none');
+        } else if (e.target.value === 'hibrido') {
+          map.setPaintProperty('l_calles', 'raster-opacity', 0.5);
+          map.setLayoutProperty('l_satelite', 'visibility', 'visible');
+          map.setLayoutProperty('l_calles', 'visibility', 'visible');
+        }
+      });
+    });
+    //#endregion
+
+    //#region POPUP PREDIOS
+    const popupFields = ["predio", "tipo", "nom1", "nom2", "nom3", "nom4", "nom5"];
+    map.on('click', 'l_predios-fill', e => {
+      const feature = e.features[0];
+      //let html = '<strong>Predios</strong><br>';
+      let html = '';
+      //for (let k in feature.properties) html += `<strong>${k}:</strong> ${feature.properties[k]}<br>`; ///esto ya no servira
+      // Recorrer solo los campos permitidos
+      popupFields.forEach(k => {
+        if (feature.properties[k] !== undefined) {
+          html += `<strong>${k}:</strong> ${feature.properties[k]}<br>`;
+        }
+      });
+      new maplibregl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map);
+    });
+
+    map.on('mouseenter', 'l_predios-fill', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'l_predios-fill', () => map.getCanvas().style.cursor = '');
+    //#endregion
+
+    //#region PANEL PREDIOS
+    // Mostrar panel predios
+    document.getElementById('btn-predios').addEventListener('click', () => document.getElementById('panel-predios').style.display = 'block');
+
+    // Visualizar predios
+    document.getElementById('chk-visualizar').addEventListener('change', e => {
+      const vis = e.target.checked ? 'visible' : 'none';
+      map.setLayoutProperty('l_predios-fill', 'visibility', vis);
+      map.setLayoutProperty('l_predios-outline', 'visibility', vis);
+    });
+    // Cerrar panel predios
+    document.getElementById('close-predios').addEventListener('click', () => {
+      document.getElementById('panel-predios').style.display = 'none'; //oculta el panel         
+      document.getElementById('chk-visualizar').checked = false;  // Desmarcar checkboxes
+      document.getElementById('chk-buscar').checked = false;
+      document.getElementById('panel-atributos').style.display = 'none';    // Ocultar panel de atributos
+      map.setLayoutProperty('l_predios-fill', 'visibility', 'none');  // Ocultar capas de predios en el mapa
+      map.setLayoutProperty('l_predios-outline', 'visibility', 'none');
+    });
+    //#endregion
+
+    //#region TABLA DE ATRIBUTOS
+    // Buscar predios y mostrar tabla
+    document.getElementById('chk-buscar').addEventListener('change', async e => {
+      const panel = document.getElementById('panel-atributos');
+      panel.style.display = e.target.checked ? 'block' : 'none';
+      if (e.target.checked) {
+        const res = await fetch('http://192.168.0.13:9000/collections/public.predios/items?limit=1000', {
+          headers: { 'Accept': 'application/geo+json' }
+        });
+
+        const data = await res.json();
+        buildTable(data);
+      }
+    });
+
+    // Tabla atributos con filtros
+    function buildTable(data) {
+      const features = data.features;
+      if (!features || features.length === 0) return;
+
+      const fields = ["predio", "provincia", "municipio", "area", "tipo", "nom1", "nom2", "nom3", "nom4", "nom5"]; // para mostrar en tabla
+      const filterFields = ["predio", "tipo"];   // para filtros
+
+      const thead = document.querySelector('#tabla-atributos thead');
+      const tbody = document.querySelector('#tabla-atributos tbody');
+      const filterContainer = document.getElementById('filterContainer');
+
+      // Encabezados de la tabla
+      thead.innerHTML = '<tr>' + fields.map(f => `<th>${f}</th>`).join('') + '</tr>';
+      tbody.innerHTML = '';
+      filterContainer.innerHTML = '';
+
+      // Crear inputs solo para campos filtrables
+      filterFields.forEach(f => {
+        const input = document.createElement('input');
+        input.placeholder = `Filtrar ${f}`;
+        input.dataset.field = f;
+        input.addEventListener('input', () => applyFilters(fields, filterFields, features));
+        filterContainer.appendChild(input);
+      });
+
+      // Llenar la tabla
+      features.forEach(row => {
+        const tr = document.createElement('tr');
+        fields.forEach(f => {
+          const td = document.createElement('td');
+          td.textContent = row.properties[f] || '';
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    //para filtros y sumatoria campos filtrados
+    function applyFilters(fields, filterFields, features) {
+      const inputs = document.querySelectorAll('#filterContainer input');
+      const tbody = document.querySelector('#tabla-atributos tbody');
+      const sumHeader = document.getElementById('sumHeader');
+      const sumRow = document.getElementById('sumRow');
+      tbody.innerHTML = '';
+
+      const filters = {};
+      inputs.forEach(i => {
+        if (i.value.trim() !== '') filters[i.dataset.field] = i.value.toLowerCase();
+      });
+
+      const filtered = features.filter(f =>
+        Object.keys(filters).every(field =>
+          (f.properties[field] || '').toString().toLowerCase().includes(filters[field])
+        )
+      );
+
+      // Llenar la tabla filtrada
+      filtered.forEach(row => {
+        const tr = document.createElement('tr');
+        fields.forEach(fld => {
+          const td = document.createElement('td');
+          td.textContent = row.properties[fld] || '';
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+
+      // Calcular sumatoria de nom1..nom5
+      const sumFields = ["nom1", "nom2", "nom3", "nom4", "nom5"];
+      const totals = {};
+
+      sumFields.forEach(f => totals[f] = 0);
+
+      filtered.forEach(row => {
+        sumFields.forEach(f => {
+          const val = parseFloat(row.properties[f]) || 0;
+          totals[f] += val;
+        });
+      });
+
+      // Mostrar resultados como tabla
+      sumHeader.innerHTML = sumFields.map(f => `<th>${f}</th>`).join('');
+      sumRow.innerHTML = sumFields.map(f => `<td>${totals[f].toFixed(2)}</td>`).join('');
+    }
+
+
+    //#endregion
+
+    //#region ATUALIZAR DATOS
+    // Función para refrescar la capa y la tabla
+    async function refreshPredios() {
+      try {
+        const res = await fetch('http://192.168.0.13:9000/collections/public.predios/items?limit=1000', {
+          headers: { 'Accept': 'application/geo+json' }
+        });
+        const data = await res.json();
+
+        // Actualizar capa en el mapa
+        if (map.getSource('s_predios')) {
+          map.getSource('s_predios').setData(data);
+        } else {
+          map.addSource('s_predios', { type: 'geojson', data: data });
+          map.addLayer({
+            id: 'l_predios-fill',
+            type: 'fill',
+            source: 's_predios',
+            paint: { 'fill-color': '#088', 'fill-opacity': 0.2 },
+            layout: { visibility: 'none' }
+          });
+          map.addLayer({
+            id: 'l_predios-outline',
+            type: 'line',
+            source: 's_predios',
+            paint: { 'line-color': '#000', 'line-width': 1 },
+            layout: { visibility: 'none' }
+          });
+        }
+
+      } catch (err) {
+        console.error('Error actualizando predios:', err);
+        alert('❌ Ocurrió un error al actualizar los predios.\nDetalle: ' + err.message);
+      }
+    }
+
+    // Refrescar automáticamente al activar el check buscar en predios
+    document.getElementById('chk-buscar').addEventListener('change', async e => {
+      if (e.target.checked) {
+        await refreshPredios();
+        document.getElementById('panel-atributos').style.display = 'block';
+      } else {
+        document.getElementById('panel-atributos').style.display = 'none';
+      }
+    });
+
+    // Refrescar automáticamente al activar el check visualizar en predios
+    document.getElementById('chk-visualizar').addEventListener('change', async e => {
+      if (e.target.checked) {
+        await refreshPredios();
+      }
+    });
+
+    //#endregion
+  </script>
+</body>
+
+</html>
