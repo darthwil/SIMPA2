@@ -189,7 +189,8 @@
       [-70.50, -23.80], // suroeste (long, lat)
       [-53.00, -9.50]  // noreste (long, lat)
     ];
-
+    const base_url ='https://66d2d1c8dbbb.ngrok-free.app';
+    //const base_url ='http://192.168.0.13:9000';
     const map = new maplibregl.Map({
       container: 'map',
       style: {
@@ -201,8 +202,9 @@
           },
           s_osm: { type: 'raster', tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'] },
           //s_predios: { type: 'vector', tiles: ['http://192.168.0.13:7800/public.predios/{z}/{x}/{y}.pbf'] } //esto yano es para mas de 5000 geometrias
-          s_predios: { type: 'geojson', data: 'http://192.168.0.13:9000/collections/public.predios/items?' }
-        },
+          //s_predios: { type: 'geojson', data: 'http://192.168.0.13:9000/collections/public.predios/items?' }  //esto era sin ngrok
+          s_predios: { type: 'geojson', data: `${base_url}/collections/public.predios/items?` }  //esa comilla invertida se usa pa concatenar con variables
+         },
         layers: [
           { id: 'l_satelite', type: 'raster', source: 's_satelite', layout: { visibility: 'none' }, paint: { 'raster-opacity': 1 } },
           { id: 'l_calles', type: 'raster', source: 's_osm', layout: { visibility: 'visible' }, paint: { 'raster-opacity': 1 } },
@@ -292,7 +294,8 @@
       const panel = document.getElementById('panel-atributos');
       panel.style.display = e.target.checked ? 'block' : 'none';
       if (e.target.checked) {
-        const res = await fetch('http://192.168.0.13:9000/collections/public.predios/items?limit=1000', {
+        //const res = await fetch('http://192.168.0.13:9000/collections/public.predios/items?limit=1000', {        
+        const res = await fetch(`${base_url}/collections/public.predios/items?`,{
           headers: { 'Accept': 'application/geo+json' }
         });
 
@@ -394,7 +397,8 @@
     // Función para refrescar la capa y la tabla
     async function refreshPredios() {
       try {
-        const res = await fetch('http://192.168.0.13:9000/collections/public.predios/items?limit=1000', {
+        //const res = await fetch('http://192.168.0.13:9000/collections/public.predios/items?limit=1000', {
+        const res = await fetch(`${base_url}/collections/public.predios/items?`, {
           headers: { 'Accept': 'application/geo+json' }
         });
         const data = await res.json();
