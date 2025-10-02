@@ -6,7 +6,7 @@
 // y permite resaltar predios en el mapa.
 // ===============================
 
-import { base_url, recintos, tableFields, filterFields, sumFields } from "./config.js";
+import { base_url, recintos, tableFields, filterFields, sumFields, origendatos } from "./config.js";
 
 // Variables globales para manejar el estado
 let allFeatures = [];       // Todos los predios cargados desde el servidor
@@ -63,7 +63,8 @@ export function initPrediosPanel(map) {
 export async function refreshPredios(map) {
   try {
     // Llamada al servidor para obtener hasta 5000 registros
-    const res = await fetch(`${base_url}/collections/public.${recintos}/items?limit=5000`, {
+    //const res = await fetch(`${base_url}/collections/public.${recintos}/items?limit=5000`, {
+    const res = await fetch(origendatos, {
       headers: { 'Accept': 'application/geo+json' }
     });
     const data = await res.json();
