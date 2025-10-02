@@ -4,7 +4,7 @@ export const recintos = 'ue';
 const maxregistros = 5000;
 const geo_server = `${base_url}/collections/public.${recintos}/items?limit=${maxregistros}`; // direccion del path
 const geo_local = 'ue.geojson'; //direccion del local
-export const origendatos = geo_server;
+export const origendatos = geo_local;
 
 export const limite = [
   [-70.50, -23.80],
