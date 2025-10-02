@@ -1,0 +1,90 @@
+html, body { margin:0; padding:0; height:100%; font-family:"Roboto",sans-serif; }
+#map { width:100%; height:100%; position:absolute; top:0; left:0; z-index:0; }
+.app-header { position:absolute; top:0; left:0; width:100%; background:#1b5b2f; color:#fff; padding:4px; text-align:center; 
+            font-weight:bold; z-index:1000; }
+.menu-bar { position:absolute; top:26px; left:0; width:100%; display:flex; gap:2px; background:#1b5b2f; padding:5px; 
+            box-shadow:0 2px 4px rgba(0,0,0,0.2); z-index:1000; }
+.menu-bar button { background:#536355; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; }
+.menu-bar button:hover { background:#747f75; }
+.basemap-panel { position:absolute; top:120px; right:10px; background:#fff; padding:10px; border-radius:8px; font-size:14px; z-index:1000; }
+.atributos-panel { position:absolute; bottom:0; left:0; width:100%; max-height:35%; min-height:0; background:#fff; 
+                  overflow:auto; display:none; border-top:2px solid #ccc; z-index:1000; padding:0px; font-size:13px; }
+.atributos-panel table { width:100%; border-collapse:collapse; }
+.atributos-panel th, .atributos-panel td { border:1px solid #ccc; padding:4px; }
+
+/*.atributos-panel th { background:#f0f0f0; position:sticky; top:0; z-index:10; }*/
+/* ==== Sticky Sections ==== */
+
+/* Encabezado principal */
+#atributos-header {
+  background: #e0e0e0;
+  padding: 6px;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid #999;
+  min-width: 1500px; /* asegura scroll horizontal */
+}
+
+/* Filtros */
+#filterContainer {
+  background: #f0f0f0;
+  padding: 6px;
+  position: sticky;
+  top: 0px; /* debajo del header */
+  z-index: 19;  
+  border-bottom: 1px solid #ccc;
+  min-width: 1500px; /* asegura scroll horizontal */
+}
+
+/* Totales */
+#sumContainer {
+  background: #fdfdfd;
+  padding: 0px;
+  position: sticky;
+  top: 30px; /* debajo de filtros */
+  z-index: 18;
+  border-bottom: 1px solid #ccc;
+  min-width: 1500px; /* asegura scroll horizontal */
+  
+}
+
+/* asegurar layout de la tabla */
+#tabla-atributos {
+  min-width: 1500px; /* asegura scroll horizontal */
+  border-collapse: collapse;
+  table-layout: fixed; /* ayuda a mantener columnas alineadas */
+  white-space: nowrap; /* evita que se partan las palabras */
+}
+
+/* make thead act as sticky header group (más fiable que th individuales) */
+#tabla-atributos thead {
+  position: sticky;
+  top: 80px;                 /* ajusta este valor si cambias alturas de header/filtros/sumas */
+  display: table-header-group;
+  z-index: 200;              /* alto para que quede encima de todo */
+  background: #f0f0f0;       /* fondo opaco para que no se vea lo que está debajo */
+  border-bottom: 1px solid #ccc;
+}
+
+/* estilo de las celdas de la cabecera */
+#tabla-atributos thead th {
+  padding: 6px 8px;
+  text-align: center;
+  vertical-align: middle;
+  background: inherit; /* toma el background del thead */
+}
+
+/* PANELES LATERALES */
+.side-panel { position:absolute; left:10px; width:165px; background:#fff; padding:10px; border-radius:8px; 
+              box-shadow:0 2px 6px rgba(0,0,0,0.3); font-size:14px; z-index:2000; }
+#panel-predios { top:100px; display: none; } 
+#panel-monitoreo { top:220px; display: none; } 
+#panel-reportes { top:360px; display: none;}
+.selected { background-color:#72eef6ff; }
+#legend-votos-anulados {font-size: 14px; padding: 6px; border: 1px solid #ccc; border-radius: 6px; background: #cfd5d3; 
+                    display:none; margin-top: 5px;}
+.maplibregl-popup { font-family: "Roboto", sans-serif; font-size: 13px; color: #333; }
+.maplibregl-popup-content { padding: 8px 12px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.25);}
+
