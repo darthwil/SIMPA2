@@ -1,10 +1,10 @@
 // Configuración general
 export const base_url = 'http://192.168.0.16:9000';
-export const recintos = 'puntos_random_2000';
+export const recintos = 'ue';
 const maxregistros = 5000;
 const geo_server = `${base_url}/collections/public.${recintos}/items?limit=${maxregistros}`; // direccion del path
-const geo_local = 'puntos2000.geojson'; //direccion del local
-export const origendatos = geo_local;
+const geo_local = 'ue.geojson'; //direccion del local
+export const origendatos = geo_server;
 
 export const limite = [
   [-70.50, -23.80],
@@ -12,18 +12,18 @@ export const limite = [
 ];
 
 export const popupFields = [
-  "distrito","recinto","partido1","partido2","partido3","partido4","partido5",
-  "partido6","partido7","partido8","votos_anulados","actas_anuladas","actas_observadas"
+  "des_dis","des_ue","partido1","partido2","partido3","partido4","partido5",
+  "partido6","partido7","partido8","partido9","votosnulos","actasnulas","actasobservadas"
 ];
 
 export const tableFields = [
-  "distrito","recinto","partido1","partido2","partido3","partido4","partido5",
-  "partido6","partido7","partido8","votos_anulados","actas_anuladas","actas_observadas"
+  "des_dis","des_ue","partido1","partido2","partido3","partido4","partido5",
+  "partido6","partido7","partido8","partido9","votosnulos","actasnulas","actasobservadas"
 ];
 
-export const filterFields = ["distrito","recinto"];
+export const filterFields = ["des_dis","des_ue"];
 export const sumFields = [
   "partido1","partido2","partido3","partido4","partido5",
-  "partido6","partido7","partido8","votos_anulados","actas_anuladas","actas_observadas"
+  "partido6","partido7","partido8","partido9","votosnulos","actasnulas","actasobservadas"
 ];
 
