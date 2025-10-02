@@ -1,4 +1,5 @@
 
+
 export function initMonitoreoPanel(map) {
   const panel = document.getElementById('panel-monitoreo');
   const btn = document.getElementById('btn-monitoreo');
@@ -47,7 +48,7 @@ function clasifica_votosanulados(map, legendEl) {
   if (!data || !data.features) return;
 
   const values = data.features
-    .map(f => parseFloat(f.properties.votos_anulados)) // 👈 ahora usa votos_anulados
+    .map(f => parseFloat(f.properties.votosnulos)) // 👈 ahora usa votos_anulados
     .filter(v => !isNaN(v));
 
   if (values.length === 0) return;
@@ -61,8 +62,8 @@ function clasifica_votosanulados(map, legendEl) {
   // actualizar estilo de la capa
   map.setPaintProperty('l_votos-anulados-fill', 'circle-color', [
     'case',
-    ['<', ['get', 'votos_anulados'], breaks[0]], '#0000ff', // azul bajo
-    ['<', ['get', 'votos_anulados'], breaks[1]], '#ffff00', // amarillo medio
+    ['<', ['get', 'votosnulos'], breaks[0]], '#0000ff', // azul bajo
+    ['<', ['get', 'votosnulos'], breaks[1]], '#ffff00', // amarillo medio
     '#ff0000' // rojo alto
   ]);
 
