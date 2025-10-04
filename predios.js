@@ -6,7 +6,7 @@
 // y permite resaltar predios en el mapa.
 // ===============================
 
-import { base_url, recintos, tableFields, filterFields, sumFields, origendatos } from "./config.js";
+import { tableFields, filterFields, sumFields, origendatos } from "./config.js";
 
 // Variables globales para manejar el estado
 let allFeatures = [];       // Todos los predios cargados desde el servidor
@@ -35,7 +35,7 @@ export function initPrediosPanel(map) {
 
     // Ocultar capa de predios y limpiar selección
     map.setLayoutProperty('l_predios-fill', 'visibility', 'none');
-    map.getSource('highlight').setData({ type: 'FeatureCollection', features: [] });
+    map.getSource('highlight_predios').setData({ type: 'FeatureCollection', features: [] });
   });
 
   // Activar/Desactivar visualización de predios en el mapa
@@ -51,7 +51,9 @@ export function initPrediosPanel(map) {
   document.getElementById('chk-buscar').addEventListener('change', async e => {
     const panelAtrib = document.getElementById('panel-atributos');
     panelAtrib.style.display = e.target.checked ? 'block' : 'none';
-
+    
+    // limpiar selección de predios
+    map.getSource('highlight_predios').setData({ type: 'FeatureCollection', features: [] });
     // Si se activa, cargar datos en la tabla
     if (e.target.checked) await refreshPredios(map);
   });
@@ -169,7 +171,7 @@ function updateTableBody(map) {
       }
 
       // Mostrar highlight en el mapa
-      map.getSource('highlight').setData({ type: 'FeatureCollection', features: [row] });
+      map.getSource('highlight_predios').setData({ type: 'FeatureCollection', features: [row] });
     });
 
     tbody.appendChild(tr);
@@ -254,5 +256,5 @@ function updateSum() {
   const sumHeader = document.getElementById('sumHeader');
   const sumRow = document.getElementById('sumRow');
   sumHeader.innerHTML = sumFields.map(f => `<th>${f}</th>`).join('');
-  sumRow.innerHTML = sumFields.map(f => `<td>${totals[f].toFixed(2)}</td>`).join('');
+  sumRow.innerHTML = sumFields.map(f => `<td>${totals[f].toFixed(0)}</td>`).join('');
 }

@@ -54,9 +54,11 @@ html, body { margin:0; padding:0; height:100%; font-family:"Roboto",sans-serif; 
 #tabla-atributos {
   min-width: 1500px; /* asegura scroll horizontal */
   border-collapse: collapse;
-  table-layout: fixed; /* ayuda a mantener columnas alineadas */
+  /*table-layout: fixed;  */ /* ayuda a mantener columnas alineadas */
   white-space: nowrap; /* evita que se partan las palabras */
 }
+
+
 
 /* make thead act as sticky header group (más fiable que th individuales) */
 #tabla-atributos thead {
@@ -77,14 +79,36 @@ html, body { margin:0; padding:0; height:100%; font-family:"Roboto",sans-serif; 
 }
 
 /* PANELES LATERALES */
-.side-panel { position:absolute; left:10px; width:165px; background:#fff; padding:10px; border-radius:8px; 
-              box-shadow:0 2px 6px rgba(0,0,0,0.3); font-size:14px; z-index:2000; }
+/* Contenedor para los paneles laterales */
+.side-panels-container {
+  position: absolute;
+  left: 10px;
+  top: 100px; /* punto de inicio desde el top del mapa */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* espacio entre paneles */
+  z-index: 2000;
+}
+/* .side-panel { position:absolute; left:10px; width:165px; background:#fff; padding:10px; border-radius:8px; 
+              box-shadow:0 2px 6px rgba(0,0,0,0.3); font-size:14px; z-index:2000; } */
+
+              /* paneles individuales */
+.side-panel {
+  width: 165px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  font-size: 14px;
+  display: none; /* inicialmente ocultos */
+}              
+
 #panel-predios { top:100px; display: none; } 
 #panel-monitoreo { top:220px; display: none; } 
-#panel-reportes { top:360px; display: none;}
+#panel-municipios { top:360px; display: none;}
 .selected { background-color:#72eef6ff; }
+
 #legend-votos-anulados {font-size: 14px; padding: 6px; border: 1px solid #ccc; border-radius: 6px; background: #cfd5d3; 
                     display:none; margin-top: 5px;}
 .maplibregl-popup { font-family: "Roboto", sans-serif; font-size: 13px; color: #333; }
 .maplibregl-popup-content { padding: 8px 12px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.25);}
-

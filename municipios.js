@@ -1,0 +1,1 @@
+import { tableFields, filterFields, sumFields, origendatos_municipios } from "./config.js";

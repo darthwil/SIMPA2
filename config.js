@@ -1,10 +1,16 @@
 // Configuración general
 export const base_url = 'http://192.168.0.16:9000';
-export const recintos = 'ue';
-const maxregistros = 5000;
+export const recintos = 'vista_votos_ue';
+export const municipios = 'vista_municipios_votos';
+const maxregistros = 20000;
 const geo_server = `${base_url}/collections/public.${recintos}/items?limit=${maxregistros}`; // direccion del path
+const geo_server_municipios = `${base_url}/collections/public.${municipios}/items?limit=${maxregistros}`; // direccion del path
 const geo_local = 'ue.geojson'; //direccion del local
+//const geo_local='https://raw.githubusercontent.com/geoinnova/Points/master/points.json'
+//const geo_local='uno.json'
+
 export const origendatos = geo_local;
+export const origendatos_municipios = geo_server_municipios;
 
 export const limite = [
   [-70.50, -23.80],

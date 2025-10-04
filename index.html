@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8">
   <title>SIMPA</title>
@@ -7,85 +8,92 @@
   <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
-<div class="app-header">Wilber Lopez cel 78150068 - SIMPA</div>
+  <div class="app-header">Wilber Lopez cel 78150068 - SIMPA</div>
 
-<div class="menu-bar">
-  <button id="btn-predios">Predios</button>
-  <button id="btn-monitoreo">Monitoreo</button>
-  <button id="btn-reportes">Reportes</button>
-</div>
-
-<div class="basemap-panel">
-  <strong>Mapa Base</strong><br>
-  <input type="radio" name="basemap" value="calles" checked> Calles<br>
-  <input type="radio" name="basemap" value="satelite"> Satelital<br>
-  <input type="radio" name="basemap" value="hibrido"> Hibrido<br>
-</div>
-
-<!-- PANEL PREDIOS -->
-<div class="side-panel" id="panel-predios">
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <strong>Predios</strong>
-    <button id="close-predios">✖</button>
+  <div class="menu-bar">
+    <button id="btn-predios">Recintos</button>
+    <button id="btn-municipios">Municpios</button>
+    <button id="btn-departamentos">Departamentos</button>
+    <button id="btn-monitoreo">Monitoreo</button>
   </div>
-  <label><input type="checkbox" id="chk-visualizar"> 👁️ Ver</label><br>
-  <label><input type="checkbox" id="chk-buscar"> 🔍 Consultar</label>
-</div>
 
-<div class="atributos-panel" id="panel-atributos">
-  <!-- ENCABEZADO PRINCIPAL 
-    <div id="atributos-header">Tabla de Atributos</div>
-  -->
-  <!-- FILTROS -->
-  <div id="filterContainer"></div>
+  <div class="basemap-panel">
+    <strong>Mapa Base</strong><br>
+    <input type="radio" name="basemap" value="calles" checked> Calles<br>
+    <input type="radio" name="basemap" value="satelite"> Satelital<br>
+    <input type="radio" name="basemap" value="hibrido"> Hibrido<br>
+  </div>
 
-  <!-- SUMATORIAS -->
-  <div id="sumContainer">
-    <table id="sumTable" border="1" style="border-collapse:collapse; width:100%; text-align:center;">
-      <thead><tr id="sumHeader"></tr></thead>
-      <tbody><tr id="sumRow"></tr></tbody>
+   <!-- PANELES LATERALES -->
+  <div class="side-panels-container">    
+    <div class="side-panel" id="panel-predios">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>Predios</strong>
+        <button id="close-predios">✖</button>
+      </div>
+      <label><input type="checkbox" id="chk-visualizar"> 👁️ Ver</label><br>
+      <label><input type="checkbox" id="chk-buscar"> 🔍 Consultar</label>
+    </div>
+    <div class="side-panel" id="panel-monitoreo">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>Monitoreo</strong>
+        <button id="close-monitoreo">✖</button>
+      </div>
+      <label><input type="checkbox" id="chk-votos-anulados"> 👁️ Votos Anulados
+        <div id="legend-votos-anulados">
+        </div>
+      </label><br>
+      <label><input type="checkbox" id="chk-actas-anuladas"> 👁️ Actas Anuladas</label><br>
+      <label><input type="checkbox" id="chk-actas-observadas"> 👁️ Actas Observadas</label>
+    </div>
+    <div class="side-panel" id="panel-municipios">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>Municipios</strong>
+        <button id="close-municipios">✖</button>
+      </div>
+      <label><input type="checkbox" id="chk-mun-ver"> 👁️ Ver</label><br>
+      <label><input type="checkbox" id="chk-mun-tabla"> 📊 Consultar</label>
+    </div>
+  </div>
+
+  <!-- TABLA DE ATRIBUTOS PREDIOS-->
+  <div class="atributos-panel" id="panel-atributos">
+    <!-- FILTROS -->
+    <div id="filterContainer"></div>
+
+    <!-- SUMATORIAS -->
+    <div id="sumContainer">
+      <table id="sumTable" border="1" style="border-collapse:collapse; width:100%; text-align:center;">
+        <thead>
+          <tr id="sumHeader"></tr>
+        </thead>
+        <tbody>
+          <tr id="sumRow"></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLA PRINCIPAL -->
+    <table id="tabla-atributos">
+      <thead></thead>
+      <tbody></tbody>
     </table>
   </div>
 
-  <!-- TABLA PRINCIPAL -->
-  <table id="tabla-atributos">
-    <thead></thead>
-    <tbody></tbody>
-  </table>
-</div>
+  <div id="map"></div>
 
-<!-- PANEL MONITOREO -->
-<div class="side-panel" id="panel-monitoreo">
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <strong>Monitoreo</strong>
-    <button id="close-monitoreo">✖</button>
-  </div>
-  <label><input type="checkbox" id="chk-votos-anulados"> 👁️ Votos Anulados
-    <div id="legend-votos-anulados">
-    </div>
-  </label><br>
-  <label><input type="checkbox" id="chk-actas-anuladas"> 👁️ Actas Anuladas</label><br>
-  <label><input type="checkbox" id="chk-actas-observadas"> 👁️ Actas Observadas</label>
-</div>
+  <!-- MapLibre en global -->
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+  <!-- para graficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-<!-- PANEL REPORTES -->
-<div class="side-panel" id="panel-reportes">
-  <div style="display:flex; justify-content:space-between; align-items:center;">
-    <strong>Reportes</strong>
-    <button id="close-reportes">✖</button>
-  </div>
-  <label><input type="checkbox" id="chk-reportes-ver"> 👁️ Ver predios</label><br>
-  <label><input type="checkbox" id="chk-reportes-tabla"> 📊 Ver en tabla</label>
-</div>
-
-<div id="map"></div>
-
-<!-- MapLibre en global -->
-<script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
-<!-- Código modular -->
-<script type="module" src="./main.js"></script>
+  <!-- Código modular -->
+  <script type="module" src="./main.js"></script>
 
 </body>
+
 </html>
