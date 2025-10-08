@@ -11,13 +11,17 @@
 
 <body>
 
-  <div class="app-header">Wilber Lopez cel 78150068 - SIMPA</div>
+  <div class="app-header">
+    <button id="btn-login">Login</button>    
+    Wilber Lopez cel 78150068 - SIMPA
+  </div>
 
   <div class="menu-bar">
     <button id="btn-predios">Recintos</button>
     <button id="btn-municipios">Municpios</button>
     <button id="btn-departamentos">Departamentos</button>
     <button id="btn-monitoreo">Monitoreo</button>
+    
   </div>
 
   <div class="basemap-panel">
@@ -31,11 +35,19 @@
   <div class="side-panels-container">    
     <div class="side-panel" id="panel-predios">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong>Predios</strong>
+        <strong>Recintos</strong>
         <button id="close-predios">✖</button>
       </div>
       <label><input type="checkbox" id="chk-visualizar"> 👁️ Ver</label><br>
       <label><input type="checkbox" id="chk-buscar"> 🔍 Consultar</label>
+    </div>
+    <div class="side-panel" id="panel-municipios">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>Municipios</strong>
+        <button id="close-municipios">✖</button>
+      </div>
+      <label><input type="checkbox" id="chk-mun-ver"> 👁️ Ver</label><br>
+      <label><input type="checkbox" id="chk-mun-buscar"> 📊 Consultar</label>
     </div>
     <div class="side-panel" id="panel-monitoreo">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -48,15 +60,7 @@
       </label><br>
       <label><input type="checkbox" id="chk-actas-anuladas"> 👁️ Actas Anuladas</label><br>
       <label><input type="checkbox" id="chk-actas-observadas"> 👁️ Actas Observadas</label>
-    </div>
-    <div class="side-panel" id="panel-municipios">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <strong>Municipios</strong>
-        <button id="close-municipios">✖</button>
-      </div>
-      <label><input type="checkbox" id="chk-mun-ver"> 👁️ Ver</label><br>
-      <label><input type="checkbox" id="chk-mun-tabla"> 📊 Consultar</label>
-    </div>
+    </div>    
   </div>
 
   <!-- TABLA DE ATRIBUTOS PREDIOS-->
@@ -64,7 +68,7 @@
     <!-- FILTROS -->
     <div id="filterContainer"></div>
 
-    <!-- SUMATORIAS -->
+    <!-- SUMATORIAS PREDIOS -->
     <div id="sumContainer">
       <table id="sumTable" border="1" style="border-collapse:collapse; width:100%; text-align:center;">
         <thead>
@@ -76,8 +80,32 @@
       </table>
     </div>
 
-    <!-- TABLA PRINCIPAL -->
+    <!-- TABLA PRINCIPAL PREDIOS -->
     <table id="tabla-atributos">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- TABLA DE ATRIBUTOS MUNICIPIOS-->
+  <div class="atributos-panel" id="panel-atributos-mun">
+    <!-- FILTROS -->
+    <div id="filterContainer-mun"></div>
+
+    <!-- SUMATORIAS MUNICIPIOS-->
+    <div id="sumContainer-mun">
+      <table id="sumTable-mun" border="1" style="border-collapse:collapse; width:100%; text-align:center;">
+        <thead>
+          <tr id="sumHeader-mun"></tr>
+        </thead>
+        <tbody>
+          <tr id="sumRow-mun"></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLA PRINCIPAL MUNICIPIOS -->
+    <table id="tabla-atributos-mun">
       <thead></thead>
       <tbody></tbody>
     </table>
