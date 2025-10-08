@@ -1,4 +1,4 @@
-import { tableFields, filterFields, sumFields, origendatos_municipios } from "./config.js";
+import { tableFields_mun, filterFields_mun, sumFields_mun, origendatos_municipios } from "./config.js";
 
 // Variables globales para manejar el estado
 let allFeatures = [];       // Todos los predios cargados desde el servidor
@@ -45,7 +45,7 @@ export function initMunicipiosPanel(map) {
   document.getElementById('chk-mun-buscar').addEventListener('change', async e => {
     const panelAtrib = document.getElementById('panel-atributos-mun');
     panelAtrib.style.display = e.target.checked ? 'block' : 'none';
-    
+
     // limpiar selección de predios
     map.getSource('highlight_municipios').setData({ type: 'FeatureCollection', features: [] });
     // Si se activa, cargar datos en la tabla
@@ -72,7 +72,7 @@ export async function refreshMunicipios(map) {
     currentPage = 1; // comenzar en la primera página
 
     // Construir la tabla de atributos
-    
+
     buildTable(map);
 
   } catch (err) {
@@ -90,16 +90,16 @@ function buildTable(map) {
   const filterContainer = document.getElementById('filterContainer-mun');
 
   // Crear cabecera de tabla con los campos configurados
-  thead.innerHTML = '<tr>' + tableFields.map(f => `<th>${f}</th>`).join('') + '</tr>';
+  thead.innerHTML = '<tr>' + tableFields_mun.map(f => `<th>${f}</th>`).join('') + '</tr>';
   filterContainer.innerHTML = '';
 
   // Crear inputs de filtro dinámicamente
-  filterFields.forEach(f => {
+  filterFields_mun.forEach(f => {
     const input = document.createElement('input');
     input.placeholder = `Filtrar ${f}`;
     input.dataset.field = f;
     // Espacio entre inputs
-    input.style.marginRight = '8px'; 
+    input.style.marginRight = '8px';
     // Cada vez que el usuario escribe, aplicar filtros
     input.addEventListener('input', () => applyFilters(map));
 
@@ -148,7 +148,7 @@ function updateTableBody(map) {
     const tr = document.createElement('tr');
 
     // Crear columnas con los campos configurados
-    tableFields.forEach(f => {
+    tableFields_mun.forEach(f => {
       const td = document.createElement('td');
       td.textContent = row.properties[f] || '';
       tr.appendChild(td);
@@ -158,10 +158,12 @@ function updateTableBody(map) {
     tr.addEventListener('click', () => {
       document.querySelectorAll('#tabla-atributos-mun tbody tr').forEach(r => r.classList.remove('selected'));
       tr.classList.add('selected');
-
-      // Centrar el mapa si es un punto
+      // Centrar el mapa si es un punto o si es poligono
       if (row.geometry.type === 'Point') {
         map.flyTo({ center: row.geometry.coordinates, zoom: 16 });
+      } else if (row.geometry.type === 'Polygon' || row.geometry.type === 'MultiPolygon') {
+        const centroid = turf.centerOfMass(row);
+        map.flyTo({ center: centroid.geometry.coordinates, zoom: 10 });
       }
 
       // Mostrar highlight en el mapa
@@ -239,16 +241,16 @@ function updatePaginationControls(map, totalPages) {
 // ===============================
 function updateSum() {
   const totals = {};
-  sumFields.forEach(f => totals[f] = 0);
+  sumFields_mun.forEach(f => totals[f] = 0);
 
   // Sumar valores sobre TODOS los registros filtrados (no solo los visibles)
-  filteredFeatures.forEach(row => 
-    sumFields.forEach(f => totals[f] += parseFloat(row.properties[f]) || 0)
+  filteredFeatures.forEach(row =>
+    sumFields_mun.forEach(f => totals[f] += parseFloat(row.properties[f]) || 0)
   );
 
   // Mostrar sumatorias en la tabla
-  const sumHeader = document.getElementById('sumHeader');
-  const sumRow = document.getElementById('sumRow');
-  sumHeader.innerHTML = sumFields.map(f => `<th>${f}</th>`).join('');
-  sumRow.innerHTML = sumFields.map(f => `<td>${totals[f].toFixed(0)}</td>`).join('');
+  const sumHeader = document.getElementById('sumHeader-mun');
+  const sumRow = document.getElementById('sumRow-mun');
+  sumHeader.innerHTML = sumFields_mun.map(f => `<th>${f}</th>`).join('');
+  sumRow.innerHTML = sumFields_mun.map(f => `<td>${totals[f].toFixed(0)}</td>`).join('');
 }

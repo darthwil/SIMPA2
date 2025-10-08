@@ -1,9 +1,10 @@
 // Importar configuraciones y módulos auxiliares
 import { base_url, recintos, limite, popupFields, origendatos, origendatos_municipios } from "./config.js";
-import { initPrediosPanel, refreshPredios } from "./predios.js";
+import { initPrediosPanel } from "./predios.js";
 import { initPopupPredios } from "./popupPredios.js";
-import { initMonitoreoPanel, refreshMonitoreo } from "./monitoreo.js";
+import { initMonitoreoPanel } from "./monitoreo.js";
 import { initMunicipiosPanel } from "./municipios.js";
+import { initPopupMunicipios } from "./popupMunicipios.js";
 
 
 // Variable global del mapa
@@ -110,12 +111,21 @@ function initMap() {
         'circle-stroke-width': 2
       }
     });
-
+    map.addLayer({
+      id: 'highlight-mun',
+      type: 'fill',
+      source: 'highlight_municipios',
+      paint: {
+        'fill-color': '#72eef6ff',
+        'fill-opacity': 0.4
+      }
+    });
     // Inicializar módulos y funciones
     initPrediosPanel(map);
     initMonitoreoPanel(map);
     initMunicipiosPanel(map);
     initPopupPredios(map);
+    initPopupMunicipios(map);
     initBasemapSwitcher();
   });
 }

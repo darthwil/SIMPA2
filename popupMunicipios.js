@@ -1,17 +1,17 @@
-import { popupFields,popupDatos} from "./config.js";
+import { popupFields_mun,popupDatos_mun} from "./config.js";
 
 // Popups al hacer clic en un predio
-export function initPopupPredios(map) {
+export function initPopupMunicipios(map) {
   
   //map.on('click', 'l_predios-fill', e => {    /* antes cuando era solo para predios*/
-  map.on('click', 'l_predios-fill',e => {
-    const capasInteres = ['l_predios-fill', 'l_votos-anulados-fill']; // capas a considerar
+  map.on('click','l_municipios-fill', e => {
+    const capasInteres = ['l_municipios-fill', 'l_municipios-line']; // capas a considerar    
     const feature = map.queryRenderedFeatures(e.point, { layers: capasInteres })[0];
     //const feature = e.features[0]; //antes era solo con una capa
     const props = feature.properties;
 
-    const nomDis = props[popupFields[0]] ?? 'Sin dato'; // des_dis
-    const nomUe  = props[popupFields[1]] ?? 'Sin dato'; // des_ue
+    const nomDep = props[popupFields_mun[0]] ?? 'Sin dato'; // des_dis
+    const nomMun  = props[popupFields_mun[1]] ?? 'Sin dato'; // des_ue
 
     // 🎨 Colores por partido (puedes ampliar esta lista)
     const coloresPartido = {
@@ -32,8 +32,8 @@ export function initPopupPredios(map) {
         // HTML del popup con canvas
     const html = `
       <div style="font-family:Roboto,sans-serif; font-size:13px; padding:6px; max-width:none;">
-        <div><strong>Distrito:</strong> ${nomDis}</div>
-        <div><strong>Unidad Educativa:</strong> ${nomUe}</div>
+        <div><strong>Distrito:</strong> ${nomDep}</div>
+        <div><strong>Unidad Educativa:</strong> ${nomMun}</div>
         <canvas id="popupChart" width="440" height="260" style="margin-top:10px;"></canvas>
       </div>
     `;
@@ -48,7 +48,7 @@ export function initPopupPredios(map) {
       if (!ctx) return;
 
       // Filtrar solo partidos con valores numéricos
-      const partidos = popupDatos.filter(k => props[k] !== undefined && !isNaN(props[k]));
+      const partidos = popupDatos_mun.filter(k => props[k] !== undefined && !isNaN(props[k]));
       const valores = partidos.map(k => parseFloat(props[k]));
       const colores = partidos.map(k => coloresPartido[k] || '#ccc');
 
@@ -94,8 +94,10 @@ export function initPopupPredios(map) {
     }, 120);
   });
 
-  map.on('mouseenter', 'l_predios-fill', () => map.getCanvas().style.cursor = 'pointer');
-  map.on('mouseleave', 'l_predios-fill', () => map.getCanvas().style.cursor = '');
+  map.on('mouseenter', 'l_municipios-fill', () => map.getCanvas().style.cursor = 'pointer');
+  map.on('mouseleave', 'l_municipios-fill', () => map.getCanvas().style.cursor = '');  
+  /*
   map.on('mouseenter', 'l_votos-anulados-fill', () => map.getCanvas().style.cursor = 'pointer');
   map.on('mouseleave', 'l_votos-anulados-fill', () => map.getCanvas().style.cursor = '');
+  */
 }

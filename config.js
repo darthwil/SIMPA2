@@ -34,4 +34,21 @@ export const sumFields = [
   "partido6","partido7","partido8","partido9","votosnulos","actasnulas","actasobservadas"
 ];
 
+export const popupFields_mun = [
+  "departamen","municipio"
+];
+export const popupDatos_mun = [
+  "partido1","partido2","partido3","partido4","partido5",
+  "partido6","partido7","partido8","partido9","votosnulos","actasnulas","actasobservadas"
+];
+export const tableFields_mun = [
+  "departamen","municipio","partido1","partido2","partido3","partido4","partido5",
+  "partido6","partido7","partido8","partido9","votosnulos","actasnulas","actasobservadas"
+];
+
+export const filterFields_mun = ["departamen","municipio"];
+export const sumFields_mun = [
+  "partido1","partido2","partido3","partido4","partido5",
+  "partido6","partido7","partido8","partido9","votosnulos","actasnulas","actasobservadas"
+];
 
