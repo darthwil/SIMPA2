@@ -10,8 +10,9 @@ export function initPopupMunicipios(map) {
     //const feature = e.features[0]; //antes era solo con una capa
     const props = feature.properties;
 
-    const nomDep = props[popupFields_mun[0]] ?? 'Sin dato'; // des_dis
-    const nomMun  = props[popupFields_mun[1]] ?? 'Sin dato'; // des_ue
+    const nomDep = props[popupFields_mun[0]] ?? 'Sin dato'; // dep
+    const nomProv  = props[popupFields_mun[1]] ?? 'Sin dato'; // prov
+    const nomMun  = props[popupFields_mun[2]] ?? 'Sin dato'; // mun
 
     // 🎨 Colores por partido (puedes ampliar esta lista)
     const coloresPartido = {
@@ -32,8 +33,9 @@ export function initPopupMunicipios(map) {
         // HTML del popup con canvas
     const html = `
       <div style="font-family:Roboto,sans-serif; font-size:13px; padding:6px; max-width:none;">
-        <div><strong>Distrito:</strong> ${nomDep}</div>
-        <div><strong>Unidad Educativa:</strong> ${nomMun}</div>
+        <div><strong>Departamento:</strong> ${nomDep}</div>
+        <div><strong>Provincia:</strong> ${nomProv}</div>
+        <div><strong>Municipio:</strong> ${nomMun}</div>
         <canvas id="popupChart" width="440" height="260" style="margin-top:10px;"></canvas>
       </div>
     `;
