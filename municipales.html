@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <title>SIGA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" rel="stylesheet">
+  <!--   ESTO YA NO VA POR Q JALA EN MAIN
+  <link rel="stylesheet" href="styles.css">
+-->
+</head>
+
+<body>
+  <div class="app-header">
+    Monitoreo de Elecciones Municipales
+  </div>
+
+  <div class="menu-bar">
+    <button id="btn-inicio">Inicio</button>
+    <button id="btn-predios">Recintos</button>
+    <button id="btn-municipios">Municpios</button>
+    <button id="btn-monitoreo">Monitoreo</button>
+
+  </div>
+
+
+
+  <button id="toggle-panels-btn">◀</button>
+  <!-- PANELES LATERALES -->
+  <div class="side-panels-container">
+    <div class="basemap-panel">
+      <strong>Mapa Base</strong><br>
+      <input type="radio" name="basemap" value="calles" checked> Calles<br>
+      <input type="radio" name="basemap" value="satelite"> Satelital<br>
+      <input type="radio" name="basemap" value="hibrido"> Hibrido<br>
+    </div>
+    <div class="side-panel" id="panel-predios">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>Recintos</strong>        
+      </div>
+      <label><input type="checkbox" id="chk-visualizar"> 👁️ Ver</label><br>
+      <label><input type="checkbox" id="chk-buscar"> 🔍 Consultar</label>
+    </div>
+    <div class="side-panel" id="panel-municipios">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>Municipios</strong>        
+      </div>
+      <label><input type="checkbox" id="chk-mun-ver"> 👁️ Ver</label><br>
+      <label><input type="checkbox" id="chk-mun-buscar"> 🔍 Consultar</label>
+    </div>
+    <div class="side-panel" id="panel-monitoreo">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>Monitoreo</strong>        
+      </div>
+      <!-- Subpanel 1 -->
+      <div class="subpanel" id="monitoreo-predios">
+        <strong>Recintos</strong><br>
+        <label><input type="checkbox" id="chk-votos-anulados-predios"> 👁️ Votos Nulo</label>
+        <div id="legend-votos-anulados-predios"></div>
+        <label><input type="checkbox" id="chk-actas-anuladas-predios"> 👁️ Votos Blanco</label>
+        <div id="legend-actas-anuladas-predios"></div>
+      </div>
+      <hr>
+      <!-- Subpanel 2 -->
+      <div class="subpanel" id="monitoreo-municipios">
+        <strong>Municipios</strong><br>
+        <label><input type="checkbox" id="chk-votos-anulados-municipios"> 👁️ Votos Nulo</label>
+        <div id="legend-votos-anulados-municipios"></div>
+        <label><input type="checkbox" id="chk-actas-anuladas-municipios"> 👁️ Actas Blanco</label>
+        <div id="legend-actas-anuladas-predios"></div>
+      </div>
+      <hr>
+      <!-- Subpanel 3 -->
+      <div class="subpanel" id="monitoreo-ganadores">
+        <strong>Ganadores</strong><br>
+        <label><input type="checkbox" id="chk-votos-ganadores-predios"> 👁️ por Recinto</label>
+        <div id="legend-votos-ganadores-predios"></div>
+        <label><input type="checkbox" id="chk-votos-ganadores-municipios"> 👁️ por Municipio</label>
+        <div id="legend-votos-ganadores-municipios"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA DE ATRIBUTOS PREDIOS-->
+  <div class="atributos-panel" id="panel-atributos">
+    <!-- FILTROS -->
+    <div id="filterContainer"></div>
+
+    <!-- SUMATORIAS PREDIOS -->
+    <div id="sumContainer">
+      <table id="sumTable" border="1" style="border-collapse:collapse; width:100%; text-align:center;">
+        <thead>
+          <tr id="sumHeader"></tr>
+        </thead>
+        <tbody>
+          <tr id="sumRow"></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLA PRINCIPAL PREDIOS -->
+    <table id="tabla-atributos">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- TABLA DE ATRIBUTOS MUNICIPIOS-->
+  <div class="atributos-panel-mun" id="panel-atributos-mun">
+    <!-- FILTROS -->
+    <div id="filterContainer-mun"></div>
+
+    <!-- SUMATORIAS MUNICIPIOS-->
+    <div id="sumContainer-mun">
+      <table id="sumTable-mun" border="1" style="border-collapse:collapse; width:100%; text-align:center;">
+        <thead>
+          <tr id="sumHeader-mun"></tr>
+        </thead>
+        <tbody>
+          <tr id="sumRow-mun"></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLA PRINCIPAL MUNICIPIOS -->
+    <table id="tabla-atributos-mun">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- ESPERANDO QUE CARGUE TODO -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <span>Cargando ...</span>
+  </div>
+
+
+
+  <div id="map"></div>
+  <footer>© 2025 SIGA - LopezService</footer>
+  <!-- MapLibre en global -->
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+  <!-- para graficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <!-- /// Código modular BORRAR PARA PRODUCCION-->
+  <!-- <script src="./mun/main.js"></script>  -->
+  <!-- /// Código modular BORRAR PARA PRODUCCION-->
+
+  <!-- //// Código para PRODUCCION  -->
+  <script src="./siga/darthwil.js"></script>
+  <!--////    Código para PRODUCCION-->
+  <!-- para geometrias -->
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf/turf.min.js"></script>
+  <script>
+    document.getElementById("btn-inicio").addEventListener("click", () => {
+      window.location.href = "./index.html"; // ← ajusta ruta si estás dentro de /mun/
+    });
+  </script>
+
+</body>
+
+</html>
+
+  
